@@ -15,16 +15,31 @@ export default class NewBill {
     this.billId = null
     new Logout({ document, localStorage, onNavigate })
   }
-  handleChangeFile = e => {
-    e.preventDefault()
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
-    const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length-1]
-    const formData = new FormData()
-    const email = JSON.parse(localStorage.getItem("user")).email
-    formData.append('file', file)
-    formData.append('email', email)
 
+  // fix [BUG HUNT] - bills
+  // empêcher la saisie d'un document qui a une extension différente de jpg, jpeg ou png.
+  // This function is called when the user selects a file to upload.
+  handleChangeFile = e => {
+    e.preventDefault(); // prevents the default form submission behavior
+    
+    // gets the selected file and checks its extension
+    const file = this.document.querySelector(`input[data-testid="file"]`).files[0];
+    const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i; // regex for allowed extensions
+    if (!allowedExtensions.exec(file.name)) { // if the extension is not allowed
+      alert("Veuillez sélectionner un fichier au format JPEG ou PNG."); // displays an alert message
+      e.target.value = ""; // clears the file input
+      return; //preventing any further processing of the invalid file.
+    }
+    
+    // extracts the file name and creates a new FormData object to send to the API
+    const filePath = e.target.value.split(/\\/g);
+    const fileName = filePath[filePath.length-1];
+    const formData = new FormData();
+    const email = JSON.parse(localStorage.getItem("user")).email;
+    formData.append('file', file);
+    formData.append('email', email);
+  
+    // sends the data to the API and sets the resulting file ID, URL, and name
     this.store
       .bills()
       .create({
@@ -34,12 +49,14 @@ export default class NewBill {
         }
       })
       .then(({fileUrl, key}) => {
-        console.log(fileUrl)
-        this.billId = key
-        this.fileUrl = fileUrl
-        this.fileName = fileName
-      }).catch(error => console.error(error))
+        console.log(fileUrl);
+        this.billId = key;
+        this.fileUrl = fileUrl;
+        this.fileName = fileName;
+      })
+      .catch(error => console.error(error));
   }
+  
   handleSubmit = e => {
     e.preventDefault()
     console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
