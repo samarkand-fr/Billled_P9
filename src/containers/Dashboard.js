@@ -129,29 +129,35 @@ export default class {
     this.updateBill(newBill)
     this.onNavigate(ROUTES_PATH['Dashboard'])
   }
-
+  // * This function handles displaying bills for a given index and toggling the arrow icon.
+  // * It also adds a click event listener to each bill to handle editing the ticket.
+  // Fix [Bug Hunt] - Dashboard
+  // By removing the event listener before adding it again,
+  // we can ensure that only one listener is active at any given time, 
+  // preventing any unexpected behavior that may arise from multiple listeners.
   handleShowTickets(e, bills, index) {
-    if (this.counter === undefined || this.index !== index) this.counter = 0
-    if (this.index === undefined || this.index !== index) this.index = index
+    if (this.counter === undefined || this.index !== index) this.counter = 0;
+    if (this.index === undefined || this.index !== index) this.index = index;
     if (this.counter % 2 === 0) {
-      $(`#arrow-icon${this.index}`).css({ transform: 'rotate(0deg)'})
-      $(`#status-bills-container${this.index}`)
-        .html(cards(filteredBills(bills, getStatus(this.index))))
-      this.counter ++
+      $(`#arrow-icon${this.index}`).css({ transform: 'rotate(0deg)' });
+      $(`#status-bills-container${this.index}`).html(cards(filteredBills(bills, getStatus(this.index))));
+      this.counter++;
     } else {
-      $(`#arrow-icon${this.index}`).css({ transform: 'rotate(90deg)'})
-      $(`#status-bills-container${this.index}`)
-        .html("")
-      this.counter ++
+      $(`#arrow-icon${this.index}`).css({ transform: 'rotate(90deg)' });
+      $(`#status-bills-container${this.index}`).html("");
+      this.counter++;
     }
-
-    bills.forEach(bill => {
-      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
-    })
-
-    return bills
-
+    // The off('click') method removes any previously attached click event handler from the 
+    // selected element with ID open-bill{bill.id}.
+    // the click method attaches a new click event handler to the same element. 
+    // This ensures that the click event handler is not duplicated
+    bills.forEach((bill) => {
+      $(`#open-bill${bill.id}`).off('click').click((e) => this.handleEditTicket(e, bill, bills));
+    });
+  
+    return bills;
   }
+  
 
   getBillsAllUsers = () => {
     if (this.store) {
