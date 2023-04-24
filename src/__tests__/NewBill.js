@@ -150,5 +150,167 @@ describe("Given I am connected as an employee", () => {
       // Check that the handleSubmit function was called
       expect(handleSubmit).toHaveBeenCalled();
     });
+ });
+});
+
+
+/*----------------------Test d'intégration---------------------- */
+
+// Testing that the bill is created after submitting the completed form
+describe("When the user submits a completed new bill form", () => {
+  test("Then the bill is created", async () => {
+
+    // Set up the HTML for the new bill page
+    const html = NewBillUI();
+    document.body.innerHTML = html;
+
+    // Define a navigation function to change the pathname
+    const onNavigate = (pathname) => {
+      document.body.innerHTML = ROUTES({ pathname });
+    };
+
+    // Mock the local storage and set the user type as Employee
+    Object.defineProperty(window, "localStorage", {
+      value: localStorageMock,
+    });
+    window.localStorage.setItem(
+      "user",
+      JSON.stringify({
+        type: "Employee",
+        email: "azerty@email.com",
+      })
+    );
+    
+    // Initialize the NewBill container
+    const newBill = new NewBill({
+      document,
+      onNavigate,
+      store: null,
+      localStorage: window.localStorage,
+    });
+
+    // Set up a valid bill object
+    const validBill = {
+      type: "Transports",
+      name: "vol Paris beyrouth",
+      date: "2024-01-03",
+      amount: 480,
+      vat: 50,
+      pct: 17,
+      commentary: "nice to have",
+      fileUrl: "../images/beyrouth.jpg",
+      fileName: "test.jpg",
+      status: "pending",
+    };
+
+    // Check that the valid bill object is correctly defined
+    expect(validBill).toEqual(
+      expect.objectContaining({
+        type: "Transports",
+      name: "vol Paris beyrouth",
+      date: "2024-01-03",
+      amount: 480,
+      vat: 50,
+      pct: 17,
+      commentary: "nice to have",
+      fileUrl: "../images/beyrouth.jpg",
+      fileName: "test.jpg",
+      status: "pending",
+      })
+    );
+
+    // Fill in the form with the valid bill object properties
+    screen.getByTestId("expense-type").value = validBill.type;
+    screen.getByTestId("expense-name").value = validBill.name;
+    screen.getByTestId("datepicker").value = validBill.date;
+    screen.getByTestId("amount").value = validBill.amount;
+    screen.getByTestId("vat").value = validBill.vat;
+    screen.getByTestId("pct").value = validBill.pct;
+    screen.getByTestId("commentary").value = validBill.commentary;
+
+    // Set up the new bill properties with the valid bill object properties
+    newBill.fileName = validBill.fileName;
+    newBill.fileUrl = validBill.fileUrl;
+
+    // Mock the updateBill method
+    newBill.updateBill = jest.fn(); 
+
+    // Set up a handle submit function
+    const handleSubmit = jest.fn((e) => newBill.handleSubmit(e)); 
+
+    const form = screen.getByTestId("form-new-bill");
+    form.addEventListener("submit", handleSubmit);
+
+    // Simulate submitting the form
+    fireEvent.submit(form);
+
+    // Check that the handleSubmit and updateBill methods have been called
+    expect(handleSubmit).toHaveBeenCalled();
+    expect(newBill.updateBill).toHaveBeenCalled();
+  });
   })
-})
+
+// Test to check error handling when fetching bills with error 500 or error 404 from API
+describe("When fetching bills from the API with an error", () => {
+// This function sets up a test scenario for the NewBill component when fetching bills with an error from the API
+  const setupNewBillTest = async (mockStore, errorType) => {
+    // Mock the 'bills' method of the mock store and console.error method
+
+    jest.spyOn(mockStore, "bills");
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    // Define localStorage and location for testing purposes
+    Object.defineProperty(window, "localStorage", {
+      value: localStorageMock,
+    });
+    Object.defineProperty(window, "location", {
+      value: { hash: ROUTES_PATH["NewBill"] },
+    });
+    // Set user type and create root element
+
+    window.localStorage.setItem("user", JSON.stringify({ type: "Employee" }));
+    document.body.innerHTML = `<div id="root"></div>`;
+    // Initialize router and onNavigate method
+
+    router();
+    const onNavigate = (pathname) => {
+      document.body.innerHTML = ROUTES({ pathname });
+    };
+    // Mock update method of bills store to throw the specified error
+    mockStore.bills.mockImplementationOnce(() => {
+      return {
+        update: () => {
+          return Promise.reject(new Error(`Erreur ${errorType}`));
+        },
+      };
+    });
+    // Create newBill instance
+    const newBill = new NewBill({
+      document,
+      onNavigate,
+      store: mockStore,
+      localStorage: window.localStorage,
+    });
+    // Get the new bill form and submit it
+
+    const form = screen.getByTestId("form-new-bill");
+    const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+    form.addEventListener("submit", handleSubmit);
+    fireEvent.submit(form);
+    // Wait for promise to resolve
+
+    await new Promise(process.nextTick);
+    // Verify that console.error is called
+    expect(console.error).toBeCalled();
+  };
+    // This test scenario fetches bills from the API and fails with an error  500 
+    test("fetches error from an API and fails with 500 error", async () => {
+      await setupNewBillTest(mockStore, 500);
+    });
+    // This test scenario fetches bills from the API and fails with an error  404 
+    test("fetches error from an API and fails with 404 error", async () => {
+      await setupNewBillTest(mockStore, 404);
+    });
+  
+ });
+
+
