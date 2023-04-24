@@ -106,88 +106,51 @@ describe("When the Bills page is rendered", () => {
   });
 });
 describe("When the new bill button is clicked", () => {
-//   test("Then the user should be taken to the new bill form", () => {
-//     // Define the onNavigate function to render the ROUTES
-//     const onNavigate = pathname => {
-//       document.body.innerHTML = ROUTES({ pathname });
-//     };
+  test("Then the user should be sent on New Bill form", () => {
+    // Define the onNavigate function to render the ROUTES
+    const onNavigate = jest.fn();
 
-//     // Set up the local storage with user data
-//     Object.defineProperty(window, "localStorage", {
-//       value: localStorageMock,
-//     });
-//     window.localStorage.setItem(
-//       "user",
-//       JSON.stringify({
-//         type: "Employee",
-//       })
-//     );
+    // Set up the local storage with user data
+    Object.defineProperty(window, "localStorage", {
+      value: localStorageMock,
+    });
+    window.localStorage.setItem(
+      "user",
+      JSON.stringify({
+        type: "Employee",
+      })
+    );
 
-//     // Create a new bills instance and render the bills UI
-//     const bills = new Bills({
-//       document,
-//       onNavigate,
-//       store: mockedStore,
-//       localStorage: window.localStorage,
-//     });
-//     document.body.innerHTML = BillsUI({ data: bills });
+    // Create a new bills instance and render the bills UI
+    const bills = new Bills({
+      document,
+      onNavigate,
+      store: mockedStore,
+      localStorage: window.localStorage,
+    });
+    document.body.innerHTML = BillsUI({ data: bills });
 
-//     // Find and click the new bill button
-//     const buttonNewBill = screen.getByRole("button", {
-//       name: /nouvelle note de frais/i,
-//     });
-//     userEvent.click(buttonNewBill);
+    const buttonNewBill = screen.getByRole("button", {
+      name: /nouvelle note de frais/i,
+    });
 
-//     // Check if the user is taken to the new bill form
-//     const formNewBill = screen.getByTestId("btn-new-bill");
-//     expect(formNewBill).toBeInTheDocument();
-//   });
-// });
-test("Then the user should be sent on New Bill form", () => {
-  // Define the onNavigate function to render the ROUTES
-  const onNavigate = jest.fn();
+    // Ensure that the button to add a new bill is present.
+    expect(buttonNewBill).toBeTruthy();
 
-  // Set up the local storage with user data
-  Object.defineProperty(window, "localStorage", {
-    value: localStorageMock,
+    // Mock the event handler for when the new bill button is clicked.
+    const handleClickNewBill = jest.fn(bills.handleClickNewBill);
+    buttonNewBill.addEventListener("click", handleClickNewBill);
+
+    // Simulate a user clicking the new bill button.
+    userEvent.click(buttonNewBill);
+
+    // Ensure that the event handler for the new bill button was called.
+    expect(handleClickNewBill).toHaveBeenCalled();
+
+    // Ensure that the onNavigate function was called with the correct path.
+    expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH['NewBill']);
   });
-  window.localStorage.setItem(
-    "user",
-    JSON.stringify({
-      type: "Employee",
-    })
-  );
-
-  // Create a new bills instance and render the bills UI
-  const bills = new Bills({
-    document,
-    onNavigate,
-    store: mockedStore,
-    localStorage: window.localStorage,
   });
-  document.body.innerHTML = BillsUI({ data: bills });
-
-  const buttonNewBill = screen.getByRole("button", {
-    name: /nouvelle note de frais/i,
-  });
-
-  // Ensure that the button to add a new bill is present.
-  expect(buttonNewBill).toBeTruthy();
-
-  // Mock the event handler for when the new bill button is clicked.
-  const handleClickNewBill = jest.fn(bills.handleClickNewBill);
-  buttonNewBill.addEventListener("click", handleClickNewBill);
-
-  // Simulate a user clicking the new bill button.
-  userEvent.click(buttonNewBill);
-
-  // Ensure that the event handler for the new bill button was called.
-  expect(handleClickNewBill).toHaveBeenCalled();
-
-  // Ensure that the onNavigate function was called with the correct path.
-  expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH['NewBill']);
-});
-});
 
 // Test for  the modal behavior when clicking on icon eye
 
@@ -249,118 +212,16 @@ describe("When the eye icon is clicked on a bill", () => {
   });
 });
 
-
-// // Test the modal behavior.
-// describe("When I click on one eye icon", () => {
-// test("Then a modal should open", async () => {
-//   const onNavigate = pathname => {
-//     document.body.innerHTML = ROUTES({ pathname });
-//   };
-
-//   Object.defineProperty(window, "localStorage", {
-//     value: localStorageMock,
-//   });
-
-//   window.localStorage.setItem(
-//     "user",
-//     JSON.stringify({
-//       type: "Employee",
-//     })
-//   );
-
-//   const billsPage = new Bills({
-//     document,
-//     onNavigate,
-//     store: mockedStore,
-//     localStorage: window.localStorage,
-//   });
-
-//   document.body.innerHTML = BillsUI({ data: bills });
-
-//   const iconEyes = screen.getAllByTestId("icon-eye");
-
-//   // Mock the event handler for when an eye icon is clicked.
-//   const handleClickIconEye = jest.fn(billsPage.handleClickIconEye);
-
-//   // Mock the behavior of the Bootstrap modal.
-//   const modal = document.getElementById("modaleFile");
-//   $.fn.modal = jest.fn(() => modal.classList.add("show"));
-
-//   // Simulate a user clicking each eye icon.
-//   iconEyes.forEach(iconEye => {
-//     iconEye.addEventListener("click", () => handleClickIconEye(iconEye));
-//     userEvent.click(iconEye);
-
-//     // Ensure that the event handler for the eye icon was called.
-//     expect(handleClickIconEye).toHaveBeenCalled();
-
-//     // Ensure that the modal is visible.
-//     expect(modal).toHaveClass("show");
-//   });
-// });
-
-// });
-// describe("When I click on one eye icon", () => {
-//   test("Then a modal should open", async () => {
-//     const onNavigate = pathname => {
-//       document.body.innerHTML = ROUTES({ pathname });
-//     };
-
-//     Object.defineProperty(window, "localStorage", {
-//       value: localStorageMock,
-//     });
-
-//     window.localStorage.setItem(
-//       "user",
-//       JSON.stringify({
-//         type: "Employee",
-//       })
-//     );
-
-//     const billsPage = new Bills({
-//       document,
-//       onNavigate,
-//       store: mockedStore,
-//       localStorage: window.localStorage,
-//     });
-
-//     document.body.innerHTML = BillsUI({ data: bills });
-
-//     const iconEyes = screen.getAllByTestId("icon-eye");
-
-//     // Mock the behavior of the Bootstrap modal.
-//     const modal = document.getElementById("modaleFile");
-//     $.fn.modal = jest.fn(() => modal.classList.add("show"));
-
-//     // Simulate a user clicking each eye icon.
-//     iconEyes.forEach(iconEye => {
-//       const handleClickIconEye = jest.spyOn(billsPage, "handleClickIconEye");
-//       iconEye.addEventListener("click", () => handleClickIconEye(iconEye));
-//       userEvent.click(iconEye);
-
-//       // Ensure that the event handler for the eye icon was called.
-//       expect(handleClickIconEye).toHaveBeenCalled();
-
-//       // Ensure that the modal is visible.
-//       expect(modal).toHaveClass("show");
-
-//       // Clean up the spy.
-//       handleClickIconEye.mockRestore();
-//     });
-//   });
-// });
-
-
 // Test the behavior when the bills page is loading.
 describe("When I navigate to the bills page and it is loading", () => {
-test("Then the loading page should be rendered", () => {
-  document.body.innerHTML = BillsUI({ loading: true });
+  test("Then the loading page should be rendered", () => {
+    document.body.innerHTML = BillsUI({ loading: true });
 
-  // Ensure that the loading message is visible.
-  expect(screen.getByText("Loading...")).toBeVisible();
-  document.body.innerHTML = "";
-});
-});
+    // Ensure that the loading message is visible.
+    expect(screen.getByText("Loading...")).toBeVisible();
+    document.body.innerHTML = "";
+  });
+  });
 
 // Test the behavior when an error is received from the back-end.
 describe("When I am on the bills page and the back-end sends an error message", () => {
@@ -410,6 +271,7 @@ describe("When I am on the bills page and I get the status of a bill, I expect i
 })
 
 ///////////////////////////////////////////////////////
+
 //  test d'intégration GET 
     describe("When I navigate to Bills Page", () => {
       test("fetches bills from mock API GET", async () => {
