@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
- import { screen, fireEvent } from "@testing-library/dom";
+import { screen, fireEvent } from "@testing-library/dom";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 
@@ -25,14 +25,14 @@ that the file is correctly handled and submitted.
 */
 describe("Given I am connected as an employee", () => {
   describe("When I submit a new Bill", () => {
-  // Define a test to ensure that the bill is correctly saved
+    // Define a test to ensure that the bill is correctly saved
     test("Then the bill must be correctly saved", async () => {
       // Define a navigation function to change the pathname
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
 
-     // Mock the local storage and set user type as "Employee"
+      // Mock the local storage and set user type as "Employee"
       Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
       });
@@ -56,9 +56,9 @@ describe("Given I am connected as an employee", () => {
       });
       // Get the new bill form
       const formNewBill = screen.getByTestId("form-new-bill");
-     // Ensure that the form element has been found and selected correctly
+      // Ensure that the form element has been found and selected correctly
       expect(formNewBill).toBeTruthy();
-     // Add a submit event listener to the form and trigger a submit event
+      // Add a submit event listener to the form and trigger a submit event
       const handleSubmit = jest.fn((e) => newBillInit.handleSubmit(e));
       formNewBill.addEventListener("submit", handleSubmit);
       fireEvent.submit(formNewBill);
@@ -66,32 +66,32 @@ describe("Given I am connected as an employee", () => {
       expect(handleSubmit).toHaveBeenCalled();
     });
 
-// Define a test to ensure that bills are fetched from the mock API on submit
+    // Define a test to ensure that bills are fetched from the mock API on submit
     test("Then fetches bills from mock API POST", async () => {
       // Mock local storage and set user type as "Employee"
       localStorage.setItem(
         "user",
         JSON.stringify({ type: "Employee", email: "a@a" })
       );
-        // Create a root element and append to body
+      // Create a root element and append to body
       const root = document.createElement("div");
       root.setAttribute("id", "root");
       document.body.append(root);
-       // Call the router function to navigate to the NewBill page
+      // Call the router function to navigate to the NewBill page
       router();
       window.onNavigate(ROUTES_PATH.NewBill);
     });
-    
-  // Define a test to ensure that the file is correctly handled and submitted
+
+    // Define a test to ensure that the file is correctly handled and submitted
     test("Then verify the file bill", async () => {
       // Spy on the "bills" method of the mock store object
       jest.spyOn(mockStore, "bills");
-    
+
       // Define a navigation function to change the pathname
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
-    
+
       // Mock the local storage and location, and set user type as "Employee"
       Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
@@ -105,11 +105,11 @@ describe("Given I am connected as an employee", () => {
           type: "Employee",
         })
       );
-    
+
       // Set up the HTML for the new bill page
       const html = NewBillUI();
       document.body.innerHTML = html;
-    
+
       // Initialize the NewBill container
       const newBillInit = new NewBill({
         document,
@@ -117,40 +117,40 @@ describe("Given I am connected as an employee", () => {
         store: mockStore,
         localStorage: window.localStorage,
       });
-    
+
       // Create a new file object to simulate a file upload
       const file = new File(["image"], "image.png", { type: "image/png" });
-    
+
       // Define a mock function to handle the file change event
       const handleChangeFile = jest.fn((e) => newBillInit.handleChangeFile(e));
-    
+
       // Get the form and file input elements by their test IDs
       const formNewBill = screen.getByTestId("form-new-bill");
       const billFile = screen.getByTestId("file");
-    
+
       // Add an event listener to the file input element to trigger the handleChangeFile function
       billFile.addEventListener("change", handleChangeFile);
-    
+
       // Simulate uploading the file by triggering the "change" event on the file input element
       userEvent.upload(billFile, file);
-    
+
       // Check that the file name is defined and that the handleChangeFile function was called
       expect(billFile.files[0].name).toBeDefined();
       expect(handleChangeFile).toBeCalled();
-    
+
       // Define a mock function to handle the form submit event
       const handleSubmit = jest.fn((e) => newBillInit.handleSubmit(e));
-    
+
       // Add an event listener to the form element to trigger the handleSubmit function
       formNewBill.addEventListener("submit", handleSubmit);
-    
+
       // Simulate submitting the form by triggering the "submit" event on the form element
       fireEvent.submit(formNewBill);
-    
+
       // Check that the handleSubmit function was called
       expect(handleSubmit).toHaveBeenCalled();
     });
- });
+  });
 });
 
 
@@ -180,7 +180,7 @@ describe("When the user submits a completed new bill form", () => {
         email: "azerty@email.com",
       })
     );
-    
+
     // Initialize the NewBill container
     const newBill = new NewBill({
       document,
@@ -207,15 +207,15 @@ describe("When the user submits a completed new bill form", () => {
     expect(validBill).toEqual(
       expect.objectContaining({
         type: "Transports",
-      name: "vol Paris beyrouth",
-      date: "2024-01-03",
-      amount: 480,
-      vat: 50,
-      pct: 17,
-      commentary: "nice to have",
-      fileUrl: "../images/beyrouth.jpg",
-      fileName: "test.jpg",
-      status: "pending",
+        name: "vol Paris beyrouth",
+        date: "2024-01-03",
+        amount: 480,
+        vat: 50,
+        pct: 17,
+        commentary: "nice to have",
+        fileUrl: "../images/beyrouth.jpg",
+        fileName: "test.jpg",
+        status: "pending",
       })
     );
 
@@ -233,10 +233,10 @@ describe("When the user submits a completed new bill form", () => {
     newBill.fileUrl = validBill.fileUrl;
 
     // Mock the updateBill method
-    newBill.updateBill = jest.fn(); 
+    newBill.updateBill = jest.fn();
 
     // Set up a handle submit function
-    const handleSubmit = jest.fn((e) => newBill.handleSubmit(e)); 
+    const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
 
     const form = screen.getByTestId("form-new-bill");
     form.addEventListener("submit", handleSubmit);
@@ -248,16 +248,16 @@ describe("When the user submits a completed new bill form", () => {
     expect(handleSubmit).toHaveBeenCalled();
     expect(newBill.updateBill).toHaveBeenCalled();
   });
-  })
+})
 
 // Test to check error handling when fetching bills with error 500 or error 404 from API
 describe("When fetching bills from the API with an error", () => {
-// This function sets up a test scenario for the NewBill component when fetching bills with an error from the API
+  // This function sets up a test scenario for the NewBill component when fetching bills with an error from the API
   const setupNewBillTest = async (mockStore, errorType) => {
     // Mock the 'bills' method of the mock store and console.error method
 
     jest.spyOn(mockStore, "bills");
-    jest.spyOn(console, "error").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => { });
     // Define localStorage and location for testing purposes
     Object.defineProperty(window, "localStorage", {
       value: localStorageMock,
@@ -302,15 +302,15 @@ describe("When fetching bills from the API with an error", () => {
     // Verify that console.error is called
     expect(console.error).toBeCalled();
   };
-    // This test scenario fetches bills from the API and fails with an error  500 
-    test("fetches error from an API and fails with 500 error", async () => {
-      await setupNewBillTest(mockStore, 500);
-    });
-    // This test scenario fetches bills from the API and fails with an error  404 
-    test("fetches error from an API and fails with 404 error", async () => {
-      await setupNewBillTest(mockStore, 404);
-    });
-  
- });
+  // This test scenario fetches bills from the API and fails with an error  500 
+  test("fetches error from an API and fails with 500 error", async () => {
+    await setupNewBillTest(mockStore, 500);
+  });
+  // This test scenario fetches bills from the API and fails with an error  404 
+  test("fetches error from an API and fails with 404 error", async () => {
+    await setupNewBillTest(mockStore, 404);
+  });
+
+});
 
 

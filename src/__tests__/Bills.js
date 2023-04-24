@@ -2,7 +2,7 @@
 //  * @jest-environment jsdom
 //  */
 
-import { screen, waitFor,within} from "@testing-library/dom";
+import { screen, waitFor, within } from "@testing-library/dom";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import BillsUI from "../views/BillsUI.js";
@@ -51,25 +51,36 @@ describe("Given I am connected as an employee", () => {
     });
   })
 })
-    // Test to check that bills are ordered from earliest to latest
-    test("Then bills should be ordered from earliest to latest", () => {
-      // Render the bills UI with the bills data
-      document.body.innerHTML = BillsUI({
-        data: bills,
-      });
+// Test to check that bills are ordered from earliest to latest
+test("Then bills should be ordered from earliest to latest", () => {
+  // Render the bills UI with the bills data
+  document.body.innerHTML = BillsUI({
+    data: bills,
+  });
 
-      // Get all the dates and sort them in descending order
-      const dates = screen
-        .getAllByText(
-          /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
-        )
-        .map(a => a.innerHTML);
-      const antiChrono = (a, b) => (a < b ? 1 : -1);
-      const datesSorted = [...dates].sort(antiChrono);
+  // Get all the dates and sort them in descending order
+  const dates = screen
+    .getAllByText(
+      /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
+    )
+    .map(a => a.innerHTML);
+  const antiChrono = (a, b) => (a < b ? 1 : -1);
+  const datesSorted = [...dates].sort(antiChrono);
 
-      // Check that the dates are equal to the sorted dates
-      expect(dates).toEqual(datesSorted);
-    });
+  // Check that the dates are equal to the sorted dates
+  expect(dates).toEqual(datesSorted);
+});
+// Test the behavior when the bills page is loading.
+describe("When I navigate to the bills page and it is loading", () => {
+  test("Then the loading page should be rendered", () => {
+    document.body.innerHTML = BillsUI({ loading: true });
+
+    // Ensure that the loading message is visible.
+    expect(screen.getByText("Loading...")).toBeVisible();
+    document.body.innerHTML = "";
+  });
+});
+
 // Test to check if the new bill button is present
 describe("When the Bills page is rendered", () => {
   test("Then the new bill button should be present", () => {
@@ -150,13 +161,9 @@ describe("When the new bill button is clicked", () => {
     // Ensure that the onNavigate function was called with the correct path.
     expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH['NewBill']);
   });
-  });
+});
 
 // Test for  the modal behavior when clicking on icon eye
-
-
-
-// Test for when the eye icon is clicked on a bill
 describe("When the eye icon is clicked on a bill", () => {
   let html;
   let onNavigate;
@@ -212,26 +219,15 @@ describe("When the eye icon is clicked on a bill", () => {
   });
 });
 
-// Test the behavior when the bills page is loading.
-describe("When I navigate to the bills page and it is loading", () => {
-  test("Then the loading page should be rendered", () => {
-    document.body.innerHTML = BillsUI({ loading: true });
-
-    // Ensure that the loading message is visible.
-    expect(screen.getByText("Loading...")).toBeVisible();
-    document.body.innerHTML = "";
-  });
-  });
-
 // Test the behavior when an error is received from the back-end.
 describe("When I am on the bills page and the back-end sends an error message", () => {
-test("Then the error page should be rendered", () => {
-  document.body.innerHTML = BillsUI({ error: "error message" });
+  test("Then the error page should be rendered", () => {
+    document.body.innerHTML = BillsUI({ error: "error message" });
 
-  // Ensure that the error message is visible.
-  expect(screen.getByText("Erreur")).toBeVisible();
-  document.body.innerHTML = "";
-});
+    // Ensure that the error message is visible.
+    expect(screen.getByText("Erreur")).toBeVisible();
+    document.body.innerHTML = "";
+  });
 });
 
 // The test checks whether the function returns the expected translation 
@@ -273,62 +269,62 @@ describe("When I am on the bills page and I get the status of a bill, I expect i
 ///////////////////////////////////////////////////////
 
 //  test d'intégration GET 
-    describe("When I navigate to Bills Page", () => {
-      test("fetches bills from mock API GET", async () => {
-        jest.spyOn(mockedStore, "bills");
-        Object.defineProperty(window, "localStorage", {
-          value: localStorageMock,
-        });
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ type: "Employee", email: "a@a" })
-        );
-
-        const root = document.createElement("div");
-        root.setAttribute("id", "root");
-        document.body.append(root);
-        router();
-        window.onNavigate(ROUTES_PATH.Bills);
-
-        await waitFor(() => screen.getByText("Mes notes de frais"));
-
-        const newBillBtn = await screen.findByRole("button", {
-          name: /nouvelle note de frais/i,
-        });
-        const billsTableRows = screen.getByTestId("tbody");
-
-        expect(newBillBtn).toBeTruthy();
-        expect(billsTableRows).toBeTruthy();
-        expect(within(billsTableRows).getAllByRole("row")).toHaveLength(4);
-      });
-
-      test("fetches bills from an API and fails with 404 message error", async () => {
-        mockedStore.bills.mockImplementationOnce(() => {
-          return {
-            list: () => {
-              return Promise.reject(new Error("Erreur 404"));
-            },
-          };
-        });
-        window.onNavigate(ROUTES_PATH.Bills);
-        await new Promise(process.nextTick);
-        const message = screen.getByText(/Erreur 404/);
-        expect(message).toBeTruthy();
-      });
-
-      test("fetches messages from an API and fails with 500 message error", async () => {
-        mockedStore.bills.mockImplementationOnce(() => {
-          return {
-            list: () => {
-              return Promise.reject(new Error("Erreur 500"));
-            },
-          };
-        });
-
-        window.onNavigate(ROUTES_PATH.Bills);
-        await new Promise(process.nextTick);
-        const message = screen.getByText(/Erreur 500/);
-        expect(message).toBeTruthy();
-      });
+describe("When I navigate to Bills Page", () => {
+  test("fetches bills from mock API GET", async () => {
+    jest.spyOn(mockedStore, "bills");
+    Object.defineProperty(window, "localStorage", {
+      value: localStorageMock,
     });
- 
+    localStorage.setItem(
+      "user",
+      JSON.stringify({ type: "Employee", email: "a@a" })
+    );
+
+    const root = document.createElement("div");
+    root.setAttribute("id", "root");
+    document.body.append(root);
+    router();
+    window.onNavigate(ROUTES_PATH.Bills);
+
+    await waitFor(() => screen.getByText("Mes notes de frais"));
+
+    const newBillBtn = await screen.findByRole("button", {
+      name: /nouvelle note de frais/i,
+    });
+    const billsTableRows = screen.getByTestId("tbody");
+
+    expect(newBillBtn).toBeTruthy();
+    expect(billsTableRows).toBeTruthy();
+    expect(within(billsTableRows).getAllByRole("row")).toHaveLength(4);
+  });
+
+  test("fetches bills from an API and fails with 404 message error", async () => {
+    mockedStore.bills.mockImplementationOnce(() => {
+      return {
+        list: () => {
+          return Promise.reject(new Error("Erreur 404"));
+        },
+      };
+    });
+    window.onNavigate(ROUTES_PATH.Bills);
+    await new Promise(process.nextTick);
+    const message = screen.getByText(/Erreur 404/);
+    expect(message).toBeTruthy();
+  });
+
+  test("fetches messages from an API and fails with 500 message error", async () => {
+    mockedStore.bills.mockImplementationOnce(() => {
+      return {
+        list: () => {
+          return Promise.reject(new Error("Erreur 500"));
+        },
+      };
+    });
+
+    window.onNavigate(ROUTES_PATH.Bills);
+    await new Promise(process.nextTick);
+    const message = screen.getByText(/Erreur 500/);
+    expect(message).toBeTruthy();
+  });
+});
+
