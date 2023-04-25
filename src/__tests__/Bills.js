@@ -269,6 +269,7 @@ describe("When I am on the bills page and I get the status of a bill, I expect i
 ///////////////////////////////////////////////////////
 
 //  test d'intégration GET 
+describe("Given I am a user connected as employer",() =>{
 describe("When I navigate to Bills Page", () => {
   test("fetches bills from mock API GET", async () => {
     jest.spyOn(mockedStore, "bills");
@@ -327,4 +328,4 @@ describe("When I navigate to Bills Page", () => {
     expect(message).toBeTruthy();
   });
 });
-
+})
