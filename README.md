@@ -48,12 +48,12 @@ $ npm install
 
 Installez live-server pour lancer un serveur local :
 ```
-$ npm install -g live-server
+$ npm install  live-server
 ```
 
 Lancez l'application :
 ```
-$ live-server
+$ npm run start
 ```
 
 Puis allez à l'adresse : `http://127.0.0.1:8080/`
