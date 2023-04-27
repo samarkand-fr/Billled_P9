@@ -1,18 +1,26 @@
 import { ROUTES_PATH } from '../constants/routes.js'
 import Logout from "./Logout.js"
 
+// Define the NewBill component
 export default class NewBill {
   constructor({ document, onNavigate, store, localStorage }) {
+    // Save the provided document, onNavigate function, store, and localStorage
     this.document = document
     this.onNavigate = onNavigate
     this.store = store
+
+    // Add event listeners for the form and file input
     const formNewBill = this.document.querySelector(`form[data-testid="form-new-bill"]`)
     formNewBill.addEventListener("submit", this.handleSubmit)
     const file = this.document.querySelector(`input[data-testid="file"]`)
     file.addEventListener("change", this.handleChangeFile)
+
+    // Initialize properties for the file URL, name, and ID
     this.fileUrl = null
     this.fileName = null
     this.billId = null
+
+    // Create a new Logout component
     new Logout({ document, localStorage, onNavigate })
   }
 
@@ -28,7 +36,7 @@ export default class NewBill {
     if (!allowedExtensions.exec(file.name)) { // if the extension is not allowed
       alert("Veuillez sélectionner un fichier au format JPEG ou PNG."); // displays an alert message
       e.target.value = ""; // clears the file input
-      return; //preventing any further processing of the invalid file.
+      return; // Prevent any further processing of the invalid file.
     }
     
     // extracts the file name and creates a new FormData object to send to the API
@@ -56,10 +64,12 @@ export default class NewBill {
       })
       .catch(error => console.error(error));
   }
-  
+
+  // Define a function to handle when the form is submitted
   handleSubmit = e => {
     e.preventDefault()
     console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
+    // Get the necessary values from the form and create a new bill object
     const email = JSON.parse(localStorage.getItem("user")).email
     const bill = {
       email,

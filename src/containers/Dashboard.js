@@ -78,9 +78,15 @@ export default class {
     new Logout({ localStorage, onNavigate })
   }
 
+  // This function handles the click event of an eye icon 
+  // to display a modal window containing an image of a bill.
   handleClickIconEye = () => {
+    // the URL of the bill image from the data-bill-url attribute of the eye icon that was clicked.
     const billUrl = $('#icon-eye-d').attr("data-bill-url")
+    console.log(billUrl);
     const imgWidth = Math.floor($('#modaleFileAdmin1').width() * 0.8)
+    // finds the .modal-body element in the #modaleFileAdmin1 modal and replaces its content
+    //  with an <img> tag that displays the bill image using the URL obtained earlier. 
     $('#modaleFileAdmin1').find(".modal-body").html(`<div style='text-align: center;'><img width=${imgWidth} src=${billUrl} alt="Bill"/></div>`)
     if (typeof $('#modaleFileAdmin1').modal === 'function') $('#modaleFileAdmin1').modal('show')
   }
