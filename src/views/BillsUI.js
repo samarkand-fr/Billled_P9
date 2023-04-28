@@ -4,6 +4,7 @@ import LoadingPage from "./LoadingPage.js"
 
 import Actions from './Actions.js'
 
+// Define a function to create a row in the bills table for a given bill object
 const row = (bill) => {
   return (`
     <tr>
@@ -19,12 +20,21 @@ const row = (bill) => {
     `)
   }
 
-const rows = (data) => {
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
-}
+// Define a function that takes an array of bill objects and returns a string of HTML table rows
+  const rows = (data) => {
+    //fix [Bug report] - Bill
+    // Sort the bills by date in descending order
+    const sortedBills = data && data.length ? data.sort((a, b) => {
+      return new Date(b.date) - new Date(a.date)
+    }) : []
+    // Map each bill object to an HTML table row and join them into a single string
+    return sortedBills.map(bill => row(bill)).join("")
+  }
+
+  
 
 export default ({ data: bills, loading, error }) => {
-
+// Define a function to create a modal for displaying file details
   const modal = () => (`
     <div class="modal fade" id="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -41,16 +51,18 @@ export default ({ data: bills, loading, error }) => {
       </div>
     </div>
   `)
-
+  // If loading state is true, render the loading page
   if (loading) {
     return LoadingPage()
-  } else if (error) {
+  }
+  // If there is an error, render the error page with the error message 
+  else if (error) {
     return ErrorPage(error)
   }
-  
+  // If neither loading nor error state is true, render the bills page
   return (`
     <div class='layout'>
-      ${VerticalLayout(120)}
+      ${VerticalLayout(120)} <!-- Render the vertical layout component with a height of 120 -->
       <div class='content'>
         <div class='content-header'>
           <div class='content-title'> Mes notes de frais </div>
@@ -69,12 +81,12 @@ export default ({ data: bills, loading, error }) => {
               </tr>
           </thead>
           <tbody data-testid="tbody">
-            ${rows(bills)}
+            ${rows(bills)} <!-- Render all rows of the bills table using the rows function -->
           </tbody>
           </table>
         </div>
       </div>
-      ${modal()}
+      ${modal()} <!--will render the modal-->
     </div>`
   )
 }
